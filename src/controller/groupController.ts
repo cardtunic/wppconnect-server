@@ -147,36 +147,23 @@ export async function createGroup(req: Request, res: Response) {
    */
   const { participants, name } = req.body;
 
+  let response = {};
+  const infoGroup: any = [];
+
   try {
-    let response = {};
-    const infoGroup: any = [];
-
-    for (const group of groupNameToArray(name)) {
-      response = await req.client.createGroup(
-        group,
-        contactToArray(participants)
-      );
-      infoGroup.push({
-        name: group,
-        id: (response as any).gid.user,
-        participants: (response as any).participants,
-      });
-    }
-
-    return res.status(201).json({
-      status: 'success',
-      response: {
-        message: 'Group(s) created successfully',
-        group: name,
-        groupInfo: infoGroup,
-      },
-    });
+    response = await req.client.createGroup(name, []);
   } catch (e) {
     req.logger.error(e);
-    return res
-      .status(500)
-      .json({ status: 'error', message: 'Error creating group(s)', error: e });
   }
+
+  return res.status(201).json({
+    status: 'success',
+    response: {
+      message: 'Group(s) created successfully',
+      group: name,
+      groupInfo: response,
+    },
+  });
 }
 
 export async function leaveGroup(req: Request, res: Response) {
